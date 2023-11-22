@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xml:lang="en" lang="en">
+<h:head>
+    <title>Cars</title>
+</h:head>
+<body>
+<h:form id="mainForm">
+    <p:growl id="growl" showDetail="true" globalOnly="true"/>
+    <h:panelGroup>
+        <p:toolbar>
+            <p:toolbarGroup>
+                <p:commandButton value="New" actionListener="#{carMBean.initNewCar()}"
+                                 update="@form :carDialog"
+                                 oncomplete="PF('carDialog').show()"
+                                 style="margin-right: 10px"/>
+                <p:commandButton rendered="#{carMBean.selectedCar.id!=null}" value="Remove"
+                                 actionListener="#{carMBean.remove()}" update="@form" style="margin-right: 10px">
+                    <p:confirm header="Remove" message="Are you sure?"/>
+                </p:commandButton>
+                <p:commandButton rendered="#{carMBean.selectedCar.id!=null}" value="Edit" update="@form :carDialog"
+                                 oncomplete="PF('carDialog').show()"/>
+            </p:toolbarGroup>
+        </p:toolbar>
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes"/>
+        </p:confirmDialog>
+
+        <p:dataTable id="table" value="#{carMBean.carList}" var="car" rows="10"
+                     paginator="true" selectionMode="single" selection="#{carMBean.selectedCar}" rowKey="#{car.id}"
+                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                     currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                     rowsPerPageTemplate="5,10,{ShowAll|'All'}">
+
+            <p:ajax event="rowSelect" update="@form"/>
+            <p:ajax event="rowUnselect" listener="#{carMBean.initNewCar()}" update="@form"/>
+
+            <p:column filterBy="#{car.szin}" filterMatchMode="contains" sortBy="#{car.szin}">
+                <f:facet name="header">Szin</f:facet>
+                <h:outputText value="#{car.szin}"/>
+            </p:column>
+
+            <p:column filterBy="#{car.marka}" filterMatchMode="contains" sortBy="#{car.marka}">
+                <f:facet name="header">Description</f:facet>
+                <h:outputText value="#{car.marka}"/>
+            </p:column>
+
+            <p:column filterBy="#{car.owner}" filterMatchMode="contains" sortBy="#{car.owner}">
+                <f:facet name="header">Tulajdonos</f:facet>
+                <h:outputText value="#{car.owner}"/>
+            </p:column>
+        </p:dataTable>
+    </h:panelGroup>
+</h:form>
+
+<p:dialog modal="true" id="carDialog" widgetVar="carDialog">
+    <h:form id="carDialogForm">
+        <p:panelGrid columns="2">
+            <p:outputLabel for="szin" value="szin"/>
+            <p:inputText id="szin" value="#{carMBean.selectedCar.szin}" required="true"/>
+
+            <p:outputLabel for="marka" value="marka"/>
+            <p:inputText id="marka" value="#{carMBean.selectedCar.marka}" required="true"/>
+
+            <p:outputLabel for="tulajdonos" value="tulajdonos"/>
+
+            <p:selectOneMenu id="tulajdonos" value="#{carMBean.ownerID}">
+                <f:selectItem itemValue="#{null}" itemLabel="Kérem válasszon!"/>
+                <f:selectItems value="#{carMBean.ownerID}" var="owner"
+                               itemLabel="#{owner.firstName} #{owner.lastName}"
+                               itemValue="#{owner.id}"/>
+            </p:selectOneMenu>
+
+            <p:commandButton value="Close" oncomplete="PF('carDialog').hide()"/>
+            <p:commandButton value="Save" actionListener="#{carMBean.save}" update=":mainForm"/>
+        </p:panelGrid>
+    </h:form>
+</p:dialog>
+</body>
+</html>
