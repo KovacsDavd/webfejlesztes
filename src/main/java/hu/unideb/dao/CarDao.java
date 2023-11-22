@@ -1,2 +1,6 @@
-package hu.unideb.dao;public interface CarDao {
+package hu.unideb.dao;
+
+import hu.unideb.entity.Car;
+
+public interface CarDao extends CoreDao<Car> {
 }

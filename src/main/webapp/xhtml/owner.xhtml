@@ -3,9 +3,9 @@
         PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:p="http://primefaces.org/ui"
-      xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xml:lang="en" lang="en">
+      xmlns:h="http://java.sun.com/jsf/html" xml:lang="en" lang="en">
 <h:head>
-    <title>Cars</title>
+    <title>Owners</title>
 </h:head>
 <body>
 <h:form id="mainForm">
@@ -13,16 +13,18 @@
     <h:panelGroup>
         <p:toolbar>
             <p:toolbarGroup>
-                <p:commandButton value="New" actionListener="#{carMBean.initNewCar()}"
-                                 update="@form :carDialog"
-                                 oncomplete="PF('carDialog').show()"
+                <p:button value="Cars" outcome="car.xhtml" style="margin-right: 10px"/>
+                <p:commandButton value="New" actionListener="#{ownerMBean.initNewOwner()}"
+                                 update="@form :ownerDialog"
+                                 oncomplete="PF('ownerDialog').show()"
                                  style="margin-right: 10px"/>
-                <p:commandButton rendered="#{carMBean.selectedCar.id!=null}" value="Remove"
-                                 actionListener="#{carMBean.remove()}" update="@form" style="margin-right: 10px">
+                <p:commandButton rendered="#{ownerMBean.selectedOwner.id!=null}" value="Remove"
+                                 actionListener="#{ownerMBean.remove()}" update="@form" style="margin-right: 10px">
                     <p:confirm header="Remove" message="Are you sure?"/>
                 </p:commandButton>
-                <p:commandButton rendered="#{carMBean.selectedCar.id!=null}" value="Edit" update="@form :carDialog"
-                                 oncomplete="PF('carDialog').show()"/>
+                <p:commandButton rendered="#{ownerMBean.selectedOwner.id!=null}" value="Edit"
+                                 update="@form :ownerDialog"
+                                 oncomplete="PF('ownerDialog').show()"/>
             </p:toolbarGroup>
         </p:toolbar>
         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
@@ -30,53 +32,40 @@
             <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes"/>
         </p:confirmDialog>
 
-        <p:dataTable id="table" value="#{carMBean.carList}" var="car" rows="10"
-                     paginator="true" selectionMode="single" selection="#{carMBean.selectedCar}" rowKey="#{car.id}"
+        <p:dataTable id="table" value="#{ownerMBean.ownerList}" var="owner" rows="10"
+                     paginator="true" selectionMode="single" selection="#{ownerMBean.selectedOwner}"
+                     rowKey="#{owner.id}"
                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                      currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
                      rowsPerPageTemplate="5,10,{ShowAll|'All'}">
 
             <p:ajax event="rowSelect" update="@form"/>
-            <p:ajax event="rowUnselect" listener="#{carMBean.initNewCar()}" update="@form"/>
+            <p:ajax event="rowUnselect" listener="#{ownerMBean.initNewOwner()}" update="@form"/>
 
-            <p:column filterBy="#{car.szin}" filterMatchMode="contains" sortBy="#{car.szin}">
-                <f:facet name="header">Szin</f:facet>
-                <h:outputText value="#{car.szin}"/>
+            <p:column filterBy="#{owner.vezeteknev}" filterMatchMode="contains" sortBy="#{owner.vezeteknev}">
+                <f:facet name="header">Vezeteknev</f:facet>
+                <h:outputText value="#{owner.vezeteknev}"/>
             </p:column>
 
-            <p:column filterBy="#{car.marka}" filterMatchMode="contains" sortBy="#{car.marka}">
-                <f:facet name="header">Description</f:facet>
-                <h:outputText value="#{car.marka}"/>
-            </p:column>
-
-            <p:column filterBy="#{car.owner}" filterMatchMode="contains" sortBy="#{car.owner}">
-                <f:facet name="header">Tulajdonos</f:facet>
-                <h:outputText value="#{car.owner}"/>
+            <p:column filterBy="#{owner.keresztnev}" filterMatchMode="contains" sortBy="#{owner.keresztnev}">
+                <f:facet name="header">Keresztnev</f:facet>
+                <h:outputText value="#{owner.keresztnev}"/>
             </p:column>
         </p:dataTable>
     </h:panelGroup>
 </h:form>
 
-<p:dialog modal="true" id="carDialog" widgetVar="carDialog">
-    <h:form id="carDialogForm">
+<p:dialog modal="true" id="ownerDialog" widgetVar="ownerDialog">
+    <h:form id="ownerDialogForm">
         <p:panelGrid columns="2">
-            <p:outputLabel for="szin" value="szin"/>
-            <p:inputText id="szin" value="#{carMBean.selectedCar.szin}" required="true"/>
+            <p:outputLabel for="vezeteknev" value="vezeteknev"/>
+            <p:inputText id="vezeteknev" value="#{ownerMBean.selectedOwner.vezeteknev}" required="true"/>
 
-            <p:outputLabel for="marka" value="marka"/>
-            <p:inputText id="marka" value="#{carMBean.selectedCar.marka}" required="true"/>
+            <p:outputLabel for="keresztnev" value="keresztnev"/>
+            <p:inputText id="keresztnev" value="#{ownerMBean.selectedOwner.keresztnev}" required="true"/>
 
-            <p:outputLabel for="tulajdonos" value="tulajdonos"/>
-
-            <p:selectOneMenu id="tulajdonos" value="#{carMBean.ownerID}">
-                <f:selectItem itemValue="#{null}" itemLabel="Kérem válasszon!"/>
-                <f:selectItems value="#{carMBean.ownerID}" var="owner"
-                               itemLabel="#{owner.firstName} #{owner.lastName}"
-                               itemValue="#{owner.id}"/>
-            </p:selectOneMenu>
-
-            <p:commandButton value="Close" oncomplete="PF('carDialog').hide()"/>
-            <p:commandButton value="Save" actionListener="#{carMBean.save}" update=":mainForm"/>
+            <p:commandButton value="Close" oncomplete="PF('ownerDialog').hide()"/>
+            <p:commandButton value="Save" actionListener="#{ownerMBean.save}" update=":mainForm"/>
         </p:panelGrid>
     </h:form>
 </p:dialog>
